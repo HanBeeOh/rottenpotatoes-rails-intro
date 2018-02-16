@@ -42,12 +42,16 @@ table#movies {
 table#movies th {
   border: 2px solid white;
   font-weight: bold;
-  background-color: wheat;
+  /*background-color: wheat;*/
 }
 table#movies th, table#movies td {
   padding: 4px;
   text-align: left;
 }
+table#movies th.hilite{
+  background-color: yellow;
+}
+
 #notice #warning {
   background: rosybrown;
   margin: 1em 0;

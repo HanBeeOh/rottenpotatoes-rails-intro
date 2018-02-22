@@ -14,8 +14,6 @@ class MoviesController < ApplicationController
     @sort = params[:sort]
     @movies = Movie.all.order( @sort )
     
-    
-    
     @checked = {}
     @all_ratings =  ['G','PG','PG-13','R']
     @all_ratings.each { |rating|

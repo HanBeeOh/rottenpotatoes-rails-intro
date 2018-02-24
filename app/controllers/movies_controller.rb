@@ -11,22 +11,23 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @sort = params[:sort]
-    @movies = Movie.all.order( @sort )
+    @all_ratings = ['G', 'PG', 'PG-13', 'R']
     
-    @checked = {}
-    @all_ratings =  ['G','PG','PG-13','R']
-    @all_ratings.each { |rating|
-      if params[:ratings] == nil
-        @checked[rating] = false
-      else
-        @checked[rating] = params[:ratings].has_key?(rating)
-      end
-    }
-    if(@checked != nil)
-      @movies = @movies.find_all{ |m| @checked.has_key?(m.rating) and  @checked[m.rating]==true}      
+    if params[:ratings]
+      @movies = Movie.where(:rating => params[:ratings].keys)
+    end
+    
+    case params[:sort]
+    when 'title'
+      @movies = Movie.order(:title)
+    when 'release'
+      @movies = Movie.order(:ratings)
+    else
+      params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
+                         @movies = Movie.all
     end
   end
+
 
   def new
     # default: render 'new' template

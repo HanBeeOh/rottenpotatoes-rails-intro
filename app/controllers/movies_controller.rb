@@ -11,23 +11,40 @@ class MoviesController < ApplicationController
   end
 
   def index
+    logger.debug("In the params[:rating] = #{params[:rating]}")
+    logger.debug("In the session[:rating] = #{session[:rating]}")
+    logger.debug("In the params[:sort] = #{params[:sort]}")
+    logger.debug("In the session[:sort] = #{session[:sort]}")
+    
     @all_ratings = ['G', 'PG', 'PG-13', 'R']
+    @movies = Movie.all
     
-    if params[:ratings]
-      @movies = Movie.where(:rating => params[:ratings].keys)
+    if (params[:ratings] == nil and (session[:ratings] != nil))
+        params[:ratings] = session[:ratings]
+      #redirect_to movies_path(:filter => params[:filter], :sort => params[:sort], :ratings => params[:ratings]) 
     end
+    if ((params[:sort] == nil) and (session[:sort] != nil))
+        params[:sort] = session[:sort]
+      #redirect_to movies_path(:filter => params[:filter], :sort => params[:sort], :ratings => params[:ratings]) 
+    end 
     
-    case params[:sort]
-    when 'title'
-      @movies = Movie.order(:title)
-    when 'release'
-      @movies = Movie.order(:ratings)
-    else
-      params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
-                         @movies = Movie.all
+    rate = params[:ratings]||session[:ratings]
+    #redirect = false
+    if(params[:ratings].present?)
+      @movies = Movie.where(rating: params[:ratings].keys)
+      session[:ratings] = params[:ratings]
     end
+    params[:ratings] = session[:ratings]
+    
+    if(params[:sort] == 'title' or (params[:sort] == nil and session[:sort] == 'title'))
+      @movies = Movie.where(rating: rate.keys).order(:title)
+      session[:sort] = params[:sort]
+    elsif(params[:sort] == 'release_date' or (params[:sort] == nil and session[:sort] == 'release_date'))
+      @movies = Movie.where(rating: rate.keys).order(:release_date)
+      session[:sort] = params[:sort]
+    end
+    params[:sort] = session[:sort]
   end
-
 
   def new
     # default: render 'new' template
